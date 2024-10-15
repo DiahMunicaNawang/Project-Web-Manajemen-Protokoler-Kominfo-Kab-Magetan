@@ -1,0 +1,46 @@
+[
+    {
+        "id": 1,
+        "name": "Dashboard",
+        "module": "dashboard",
+        "slug": "dashboard",
+        "icon": "ki-outline ki-home fs-2",
+        "url": "/dashboard",
+        "parent_id": null,
+        "order": 0,
+        "status": true
+    },
+    {
+        "id": 2,
+        "name": "Event",
+        "module": "event",
+        "slug": "event",
+        "icon": "fas fa-calendar-plus fs-2",
+        "url": "/event",
+        "parent_id": null,
+        "order": 0,
+        "status": true
+    },
+    {
+        "id": 3,
+        "name": "User List",
+        "module": "users-list",
+        "slug": "user-list",
+        "icon": "ki-outline ki-people fs-2",
+        "url": "/user/list",
+        "parent_id": null,
+        "order": 0,
+        "status": true
+    },
+    {
+        "id": 4,
+        "name": "Roles",
+        "module": "roles",
+        "slug": "roles",
+        "icon": "ki-outline ki-security-user fs-2",
+        "url": "/user/roles",
+        "parent_id": null,
+        "order": 1,
+        "status": true
+    }
+]
