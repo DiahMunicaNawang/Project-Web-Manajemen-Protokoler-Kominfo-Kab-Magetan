@@ -15,7 +15,7 @@ class DashboardController extends Controller
     }
 
     public function index() {
-        $events = Events::paginate(24);
+        $events = Events::where('end_date', '>=', now())->orderBy('start_date', 'asc')->paginate(24);
         return $this->render('dashboard', [
             'events' => $events,
             'menus' => $this->getMenus(),

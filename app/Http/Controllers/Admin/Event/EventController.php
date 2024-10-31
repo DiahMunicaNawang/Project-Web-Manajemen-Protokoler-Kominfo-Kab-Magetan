@@ -176,13 +176,14 @@ class EventController extends Controller
 
             Events::create([
                 'name' => $request->name,
-                'description' => $request->description,
+                'description' => strip_tags($request->description), 
                 'dinas' => $request->dinas,
                 'location' => $request->location,
                 'file_pdf' => $request->pdf_file,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
             ]);
+            
 
             DB::commit();
 
@@ -242,13 +243,15 @@ class EventController extends Controller
 
             $event->update([
                 'name' => $request->name,
-                'description' => $request->description,
+                'description' => strip_tags($request->description), 
                 'dinas' => $request->dinas,
                 'location' => $request->location,
                 'file_pdf' => $request->pdf_file,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
             ]);
+            
+
 
             DB::commit();
 
