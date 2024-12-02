@@ -26,42 +26,58 @@ class EventController extends Controller
         ]);
     }
 
-    public function data(Request $request)
-    {
-        if ($request->ajax()) {
-            if ($request->filled('name')) {
-                $events = Events::where('name', $request->name)->select('*');
-            } elseif ($request->filled('start_date') && $request->filled('end_date')) {
-                $startDateTime = $request->start_date . ' 00:00:00';
-                $endDateTime = $request->end_date . ' 23:59:59';
-                $events = Events::whereBetween('start_date', [$startDateTime, $endDateTime])
-                    ->whereBetween('end_date', [$startDateTime, $endDateTime])->select('*');
-            } elseif ($request->filled('dinas')) {
-                $events = Events::where('dinas', $request->dinas)->select('*');
-            } else {
-                $events = Events::select('*');
-            }
-            
+   public function data(Request $request)
+{
+    if ($request->ajax()) {
+        $events = Events::query();  // Mulai query utama
 
-            $datatable = new DataTables;
-            return $datatable->eloquent($events)
-                ->addColumn('action', function ($event) {
-                    return $this->getActionColumn($event);
-                })
-                ->addColumn('pdf_file', function ($event) {
-                    return $this->getPdfColumn($event->file_pdf);
-                })
-                ->addColumn('time', function ($event) {
-                    return $this->getDateColumn($event->start_date, $event->end_date);
-                })
-                ->filterColumn('name', function ($query, $keyword) {
-                    $query->where('name', 'like', "%{$keyword}%");
-                })
-                ->addIndexColumn()
-                ->rawColumns(['action', 'pdf_file', 'time'])
-                ->toJson();
+        // hanya tampilkan acara yang akan datang
+        if (!$request->filled('start_date') && !$request->filled('end_date')) {
+            $events->where('start_date', '>=', now());  // Hanya acara yang akan datang
         }
+
+        // Filter berdasarkan 'name' 
+        if ($request->filled('name')) {
+            $events->where('name', 'like', "%{$request->name}%");
+        }
+
+        // Filter berdasarkan tanggal mulai dan selesai
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $startDateTime = $request->start_date . ' 00:00:00';
+            $endDateTime = $request->end_date . ' 23:59:59';
+            $events->whereBetween('start_date', [$startDateTime, $endDateTime])
+                   ->whereBetween('end_date', [$startDateTime, $endDateTime]);
+        }
+
+        // Filter berdasarkan pelaksana 'dinas'
+        if ($request->filled('dinas')) {
+            $events->where('dinas', $request->dinas);
+        }
+
+        // Mengurutkan berdasarkan tanggal mulai ('start_date') dan selesai ('end_date')
+        $events->orderBy('start_date', 'asc')
+               ->orderBy('end_date', 'asc');
+
+        // Menyiapkan DataTables
+        $datatable = new DataTables;
+        return $datatable->eloquent($events)
+            ->addColumn('action', function ($event) {
+                return $this->getActionColumn($event);
+            })
+            ->addColumn('pdf_file', function ($event) {
+                return $this->getPdfColumn($event->file_pdf);
+            })
+            ->addColumn('time', function ($event) {
+                return $this->getDateColumn($event->start_date, $event->end_date);
+            })
+            ->filterColumn('name', function ($query, $keyword) {
+                $query->where('name', 'like', "%{$keyword}%");
+            })
+            ->addIndexColumn()
+            ->rawColumns(['action', 'pdf_file', 'time'])
+            ->toJson();
     }
+}
 
     private function getActionColumn($event)
     {
