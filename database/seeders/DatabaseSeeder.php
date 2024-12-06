@@ -19,27 +19,54 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(MenusSeeder::class);
-        $admin = Role::create(['name' => 'admin']);
-        $admin->givePermissionTo(Permission::all());
+        $super_admin = Role::create(['name' => 'super-admin']);
+        $super_admin->givePermissionTo(Permission::all());
 
-        $roles = ['role1', 'role2', 'role3', 'role4', 'role5'];
+        $adminProtokoler = Role::create(['name' => 'admin-protokoler']);
+        $adminProtokoler->givePermissionTo(['Dashboard', 'Dashboard-read', 'Dashboard-create', 'Event', 'Event-create', 'Event-read', 'Event-update', 'Event-delete']);
 
-        foreach ($roles as $roleName) {
-            $role = Role::create(['name' => $roleName]);
-            $role->givePermissionTo(['Dashboard', 'Dashboard-read', 'Dashboard-create']);
-        }
+        $adminInstansi = Role::create(['name' => 'admin-instansi']);
+        $adminInstansi->givePermissionTo(['Dashboard', 'Dashboard-read', 'Dashboard-create', 'Event']);
 
-        $user = User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@demo.com',
+        $super_admin = User::create([
+            'name' => 'Super Admin',
+            'email' => 'superadmin@demo.com',
             'password' => bcrypt('demo'),
         ]);
-        $user->assignRole('admin');
+        $super_admin->assignRole('super-admin');
+
+        $admin_protokoler = User::create([
+            'name' => 'Admin Protokoler',
+            'email' => 'adminprotokoler@demo.com',
+            'password' => bcrypt('demo'),
+        ]);
+        $admin_protokoler->assignRole('admin-protokoler');
+
+        $admin_instansi = User::create([
+            'name' => 'Admin Instansi',
+            'email' => 'admininstansi@demo.com',
+            'password' => bcrypt('demo'),
+        ]);
+        $admin_instansi->assignRole('admin-instansi');
 
         Persons::create([
-            'user_id' => $user->id,
-            'name' => 'Admin User',
-            'email' => $user->email,
+            'user_id' => $super_admin->id,
+            'name' => 'Super Admin',
+            'email' => $super_admin->email,
+            'nip' => '1234567890',
+        ]);
+
+        Persons::create([
+            'user_id' => $admin_protokoler->id,
+            'name' => 'Admin Protokoler',
+            'email' => $admin_protokoler->email,
+            'nip' => '1234567890',
+        ]);
+
+        Persons::create([
+            'user_id' => $admin_instansi->id,
+            'name' => 'Admin Instansi',
+            'email' => $admin_instansi->email,
             'nip' => '1234567890',
         ]);
 

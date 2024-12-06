@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('file_pdf');
             $table->dateTime('start_date');
             $table->dateTime('end_date');
+            $table->enum('status', ['public', 'private'])->default('public');
             $table->timestamps();
         });
     }

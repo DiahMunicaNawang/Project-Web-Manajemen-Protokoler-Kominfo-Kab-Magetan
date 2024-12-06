@@ -20,9 +20,11 @@
                             <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        @if (!auth()->user()->hasRole('admin-instansi'))
                                         <input class="form-check-input" type="checkbox" data-kt-check="true"
                                             data-kt-check-target="#event-table .form-check-input" id="header-checkbox"
                                             value="1" />
+                                        @endif
                                     </div>
                                 </th>
                                 <th class="min-w-50px">Aksi</th>
@@ -32,6 +34,7 @@
                                 <th>Ketarangan</th>
                                 <th>Tempat</th>
                                 <th>File Pdf</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                     </table>
@@ -92,6 +95,7 @@
                             name: 'checkbox',
                             orderable: false,
                             searchable: false,
+                            visible: !['admin-instansi'].includes('{!! auth()->user()->getRoleNames()->first() !!}'),
                             render: function(data, type, row) {
                                 return `
                                     <div class="form-check form-check-sm form-check-custom form-check-solid">
@@ -134,6 +138,12 @@
                             data: 'pdf_file',
                             name: 'pdf_file',
                         },
+                        @if (auth()->user()->hasRole('super-admin'))
+                        {
+                            data: 'status',
+                            name: 'status',
+                        },
+                        @endif
                         {
                             data: 'updated_at',
                             name: 'updated_at',
@@ -226,6 +236,12 @@
 
                             // Populate form
                             populateForm(editForm, response.product);
+
+                            if (response.product.status === 'public') {
+                                $('#edit_flexSwitchCheckChecked').prop('checked', true);
+                            } else {
+                                $('#edit_flexSwitchCheckChecked').prop('checked', false);
+                            }
 
                             // Mapping Selected Categories input based on response.product.categories
                             const selectedCategories = response.product.categories;

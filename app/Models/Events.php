@@ -16,7 +16,9 @@ class Events extends Model
         'location',
         'dinas',
         'file_pdf',
+        'status',
         'start_date',
         'end_date',
+        'status',
     ];
 }

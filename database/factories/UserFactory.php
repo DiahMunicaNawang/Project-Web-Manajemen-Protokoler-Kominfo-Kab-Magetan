@@ -37,7 +37,7 @@ class UserFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (User $user) {
-            $user->assignRole('admin');
+            $user->assignRole('admin-protokoler');
 
             Persons::create([
                 'nip' => $this->faker->unique()->randomNumber(8),

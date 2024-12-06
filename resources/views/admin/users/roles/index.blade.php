@@ -88,12 +88,12 @@
                             name: 'name',
                             render: function(data, type, full, meta) {
                                 switch (data) {
-                                    case 'super admin':
-                                        return `<span class="badge badge-dark fs-5">${data}</span>`;
-                                    case 'admin':
-                                        return `<span class="badge badge-light-success fs-5">${data}</span>`;
-                                    case 'user':
-                                        return `<span class="badge badge-light-warning fs-5">${data}</span>`;
+                                    case 'super-admin':
+                                        return `<span class="badge badge-light-purple fs-6 fw-medium">${data}</span>`;
+                                    case 'admin-protokoler':
+                                        return `<span class="badge badge-light-success fs-6 fw-medium">${data}</span>`;
+                                    case 'admin-instansi':
+                                        return `<span class="badge badge-light-warning fs-6 fw-medium">${data}</span>`;
                                     default:
                                         var colors = ["blue", "indigo", "purple", "pink", "red",
                                             "orange", "yellow", "green", "teal", "cyan"

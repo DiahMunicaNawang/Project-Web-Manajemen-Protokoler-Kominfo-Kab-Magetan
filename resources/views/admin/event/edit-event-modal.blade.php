@@ -38,6 +38,21 @@
     {{-- CK EDITOR --}}
     <x-molecules.ck-editor label="Deskripsi" id="edit_event_editor" name="description" folderName="uploads" required>
         </x-molecules>
+
+    @if (auth()->user()->hasRole('super-admin'))
+        {{-- STATUS --}}
+        <label class="fw-semibold fs-6 mb-2" for="checkbox-container">Tampilkan ke Publik</label>
+        <div class="d-flex align-items-center">
+            <label class="form-check-label me-2" for="edit_flexSwitchCheckChecked">Tidak</label>
+            
+            <div class="form-check form-switch">
+                <input name="status" class="form-check-input" type="checkbox" id="edit_flexSwitchCheckChecked">
+
+            </div>
+            
+            <label class="form-check-label ms-2" for="edit_flexSwitchCheckChecked">Ya</label>
+        </div>
+    @endif
 </x-molecules.modal>
 
 @push('scripts')

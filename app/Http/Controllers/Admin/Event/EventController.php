@@ -29,7 +29,7 @@ class EventController extends Controller
    public function data(Request $request)
 {
     if ($request->ajax()) {
-        $events = Events::query();  // Mulai query utama
+        $events = auth()->user()->hasRole('super-admin') ? Events::query() : Events::query()->where('status', 'public');  // Mulai query utama
 
         // hanya tampilkan acara yang akan datang
         if (!$request->filled('start_date') && !$request->filled('end_date')) {
@@ -67,6 +67,9 @@ class EventController extends Controller
             ->addColumn('pdf_file', function ($event) {
                 return $this->getPdfColumn($event->file_pdf);
             })
+            ->addColumn('status', function ($event) {
+                return $this->getStatusColumn($event->status);
+            })
             ->addColumn('time', function ($event) {
                 return $this->getDateColumn($event->start_date, $event->end_date);
             })
@@ -74,10 +77,11 @@ class EventController extends Controller
                 $query->where('name', 'like', "%{$keyword}%");
             })
             ->addIndexColumn()
-            ->rawColumns(['action', 'pdf_file', 'time'])
+            ->rawColumns(['action', 'pdf_file', 'status', 'time'])
             ->toJson();
     }
 }
+
 
     private function getActionColumn($event)
     {
@@ -157,6 +161,14 @@ class EventController extends Controller
         ';
     }
 
+    private function getStatusColumn($status)
+    {
+        $badgeClass = $status === 'public' ? 'badge-light-success' : 'badge-light-danger';
+        $statusText = ucfirst($status);
+
+        return '<span class="badge ' . $badgeClass . '">' . $statusText . '</span>';
+    }
+
     public function show($id)
     {
         $event = Events::findOrFail($id);
@@ -180,6 +192,7 @@ class EventController extends Controller
             'location' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
+            'status' => 'nullable',
         ]);
 
         // Check Dropzone for image or pdf null or not
@@ -190,6 +203,12 @@ class EventController extends Controller
         try {
             DB::beginTransaction();
 
+            if (auth()->user()->hasRole('super-admin')) {
+                $status = $request->status ? 'public' : 'private';
+            } else {
+                $status = 'public';
+            }
+
             Events::create([
                 'name' => $request->name,
                 'description' => strip_tags($request->description), 
@@ -198,6 +217,7 @@ class EventController extends Controller
                 'file_pdf' => $request->pdf_file,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
+                'status' => $status,
             ]);
             
 
@@ -238,6 +258,7 @@ class EventController extends Controller
             'location' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
+            'status' => 'nullable',
         ]);
 
         // Check Dropzone for image or pdf null or not
@@ -257,6 +278,8 @@ class EventController extends Controller
                 $this->deleteFileWhenFailedToStoreOrSuccessDelete($originalValues['pdf_file']);
             }
 
+            $status = $request->status ? 'public' : 'private';
+
             $event->update([
                 'name' => $request->name,
                 'description' => strip_tags($request->description), 
@@ -265,6 +288,7 @@ class EventController extends Controller
                 'file_pdf' => $request->pdf_file,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
+                'status' => $status,
             ]);
             
 
